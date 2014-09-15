@@ -1,0 +1,27 @@
+#!/bin/bash
+# Bootstrapping script run during the final stage of bootstrapping
+
+debconf-set-selections /debconf.set
+rm -f /debconf.set
+
+apt-get update
+apt-get -y upgrade
+
+wget https://raw.githubusercontent.com/Hexxeh/rpi-update/master/rpi-update \
+    -O /usr/bin/rpi-update
+chmod +x /usr/bin/rpi-update
+
+mkdir -p /lib/modules/3.1.9+
+touch /boot/start.elf
+
+rpi-update
+echo \"root:gnssrpi\" | chpasswd
+
+sed -i -e 's/KERNEL\!=\"eth\*|/KERNEL\!=\"/' /lib/udev/rules.d/75-persistent-net-generator.rules
+
+apt-get install -y gnuradio-dev gfortran
+./compilation
+
+
+rm -f /etc/udev/rules.d/70-persistent-net.rules
+rm -f final

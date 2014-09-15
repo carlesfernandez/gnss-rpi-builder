@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# run.in
+#
+# Bootstrap an armhf debian installation for a raspberry pi.
+#
+# Anthony Arnold, http://anthony-arnold.com, anthony.arnold@uqconnect.edu.au
+#
+# usage: gnss-rpi [options...]
+#
+# Options:
+#   --release release   : e.g. wheezy, jessie etc. Defaults to stable.
+#   --mirror mirror     : Defaults to http://archive.rasbian.org
+
+pkgsrc="@CMAKE_INSTALL_PREFIX@/lib/gnss-rpi"
+call_dir="$( pwd )"
+
+if [ $EUID -ne 0 ]; then
+  echo "Must run as root"
+  exit 1
+fi
+
+# Parse arguments
+
+release="jessie"
+mirror="http://archive.rasbian.org"
+
+while test ${#} -gt 0
+do
+    if [ $1 == "--release" ]; then
+	shift
+	release=$1
+    elif [ $1 == "--mirror" ]; then
+	shift
+	mirror=$1
+    fi
+    shift
+done
+
+# Add sources to apt
+${pkgsrc}/apt-update "${mirror}" "${release}"
+
+# Get ready for bootstrapping
+root_dir="${call_dir}/rpi-root"
+boot_dir="${root_dir}/boot"
+boot_size="64M"
+image="${call_dir}/raspbian_${release}_$( date +%Y%m%d ).img"
+
+${pkgsrc}/make-image "${image}" 3072 ${boot_size}
+
+
+# Make and mount file system
+device=`@KPARTX@ -vsa $image | sed -E 's/.*(loop[0-9])p.*/\1/g' | head -1`
+device="/dev/mapper/${device}"
+boot_dev=${device}p1
+root_dev=${device}p2
+
+echo "Making file systems"
+sleep 3
+${pkgsrc}/mount-fs "${boot_dev}" "${root_dev}" "${root_dir}"
+
+# Mount root filesystem
+sleep 3
+echo "Mounting / on ${image} ($root_dev) to ${root_dir}"
+mkdir -p "${root_dir}"
+mount $root_dev "${root_dir}"
+
+# Bootstrap
+sleep 3
+${pkgsrc}/bootstrap "${root_dir}" "${boot_dir}" $boot_dev ${release} ${mirror}
+
+# Unmount
+
+cd ${call_dir}
+sleep 3
+umount $root_dev
+@KPARTX@ -d "${image}"
+
+
+echo "Raspbian ${release} image created"

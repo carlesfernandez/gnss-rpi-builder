@@ -1,0 +1,43 @@
+#!/bin/bash
+# Bootstrap file, run during the final stage of bootstrapping
+
+mkdir "/rpi-build"
+
+procs="$( nproc )"
+
+gnss_sdr_src="/build/gnss-sdr"
+gnss_sdr_repo="git://git.code.sf.net/p/gnss-sdr/cttc"
+
+git clone --depth 1 ${gnss_sdr_repo} ${gnss_sdr_src}
+
+cd "/rpi-build"
+wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
+unzip gtest-1.7.0.zip
+cd gtest-1.7.0
+./configure
+make -j${procs}
+cd ..
+export GTEST_DIR="/rpi-build/gtest-1.7.0"
+
+compile ()
+{
+mkdir -p "$1/build"
+cd "$1/build"
+if [ ! -f ./Makefile ]; then
+    cmake \
+	-DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
+	-DENABLE_GN3S=ON \
+	-DENABLE_RTLSDR=ON \
+	../
+fi
+make -j${procs}
+make install
+ldconfig
+cd /
+}
+
+compile ${gnss_sdr_src}/drivers/gr-gn3s
+compile ${gnss_sdr_src}
+
+rm -rf "/rpi-build"
+rm -f compilation

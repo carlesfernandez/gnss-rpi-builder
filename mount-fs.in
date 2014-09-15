@@ -1,0 +1,11 @@
+#!/bin/bash
+# Intermediate script to make boot and root file systems
+# Usage: mount-fs boot root root-dir
+
+boot_dev=$1
+root_dev=$2
+root_dir=$3
+
+@MKFS_VFAT@ $boot_dev
+@MKFS_EXT4@ $root_dev
+

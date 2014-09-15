@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# gnss-rpi
+#
+# Bootstrap an armhf debian installation for a raspberry pi.
+#
+# Anthony Arnold, http://anthony-arnold.com, anthony.arnold@uqconnect.edu.au
+#
+# usage: gnss-rpi [options...]
+#
+# Options:
+#   --release release   : e.g. wheezy, jessie etc. Defaults to stable.
+#   --mirror mirror     : Defaults to http://archive.rasbian.org
+
+@CMAKE_INSTALL_PREFIX@/lib/gnss-rpi/run "$@"

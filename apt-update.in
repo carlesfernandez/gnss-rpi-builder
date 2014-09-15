@@ -1,0 +1,17 @@
+#!/bin/bash
+# Intermediate script for adding arm sources to apt
+# Usage: mirror release
+
+mirror=$1
+release=$2
+
+# Add raspbian to the apt-get keyring
+@WGET@ $mirror/raspbian.public.key -O - | apt-key add \
+    --keyring=/etc/apt/trusted.gpg -
+
+# Add raspbian armhf sources
+echo "deb [arch=armhf] $mirror/raspbian ${release} main contrib non-free" > /etc/apt/sources.list.d/gnss-rpi.list
+echo "deb-src $mirror/raspbian ${release} main contrib non-free" >> /etc/apt/sources.list.d/gnss-rpi.list
+
+# Refresh cache
+apt-get update

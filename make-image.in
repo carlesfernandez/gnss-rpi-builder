@@ -1,0 +1,32 @@
+#!/bin/bash
+# Intermediate script makes a new image file
+# Usage: make-image file size boot_size
+# Size is in megabytes
+
+image=$1
+size=$2
+boot_size=$3
+
+echo "Making a new raspbian image ${image}"
+@DD@ if=/dev/zero of="${image}" bs=1MB count=${size}
+
+# Partition the image
+echo "Partitioning ${image}"
+@FDISK@ "${image}" << EOF
+n
+p
+1
+
++${boot_size}
+t
+c
+n
+p
+2
+
+
+w
+EOF
+
+@FDISK@ -l "${image}"
+sleep 5

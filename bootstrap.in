@@ -1,0 +1,72 @@
+#!/bin/bash
+# Intermediate file for bootstrapping debian into a directory
+# Usage: bootstrap root boot boot_dev release mirror
+
+script_dir="@CMAKE_INSTALL_PREFIX@/lib/gnss-rpi"
+
+root_dir=$1
+boot_dir=$2
+boot_dev=$3
+release=$4
+mirror=$5
+
+
+echo "Bootstrapping Raspbian ${release} into ${root_dir}"
+echo "Boot device is ${boot_dev}"
+cd "${root_dir}"
+
+# Run bootstrapping tool
+@DEBOOTSTRAP@ --keyring=/etc/apt/trusted.gpg \
+    --foreign \
+    --arch armhf \
+    --flavour minimal \
+    --include `cat ${script_dir}/packages.list` \
+    ${release} ${root_dir} "$mirror/raspbian"
+
+# Copy emulator
+cp "@QEMU_ARM_STATIC@" usr/bin/
+
+# Perform the second bootstrapping stage
+echo "Second stage bootstrap"
+LANG=C @CHROOT@ ${root_dir} /sbin/init
+mkdir -p "${boot_dir}"
+
+# Mount boot filesystem
+echo "Mounting /boot on ${image} to ${boot_dir}"
+mount $boot_dev "${boot_dir}"
+
+# Setup files
+echo "Setting up preliminary files on ${image}"
+
+
+cp "${script_dir}/cmdline.txt" boot/cmdline.txt
+cp "${script_dir}/fstab" etc/fstab
+cp "${script_dir}/hostname" etc/hostname
+cp "${script_dir}/interfaces" etc/network/interfaces
+cp "${script_dir}/debconf.set" debconf.set
+
+echo "deb $mirror/raspbian ${release} main contrib non-free
+" > etc/apt/sources.list
+echo "deb-src $mirror/raspbian ${release} main contrib non-free
+" >> etc/apt/sources.list
+
+echo "vchiq
+snd_bcm2835
+" >> etc/modules
+
+cp "${script_dir}/compilation" compilation
+cp "${script_dir}/final" final
+chmod +x compilation final
+
+echo "Final bootstrap stage"
+LANG=C @CHROOT@ "${root_dir}" /final
+
+echo "Cleaning up"
+cp "${script_dir}/cleanup" cleanup
+chmod +x cleanup
+LANG=C @CHROOT@ "${root_dir}" /cleanup
+
+
+#Unmount
+sleep 1
+umount $boot_dev

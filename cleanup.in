@@ -1,0 +1,7 @@
+#!/bin/bash
+# Cleanup script run during bootstrapping
+
+aptitude update
+aptitude clean
+apt-get clean
+rm -f cleanup
