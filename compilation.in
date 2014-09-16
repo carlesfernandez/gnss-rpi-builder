@@ -34,8 +34,8 @@ gfpath="/usr/lib/gcc/arm-linux-gnueabihf/4.9"
 
 LIB="$LIB:${gfpath}" cmake \
     -DENABLE_RTLSDR=ON \
-    -DENABLE_GENERIC_ARCH=ON \ # Raspberry Pi can't take sse
-../
+    -DENABLE_GENERIC_ARCH=ON \
+    ../
 
 make -j${procs}
 make install

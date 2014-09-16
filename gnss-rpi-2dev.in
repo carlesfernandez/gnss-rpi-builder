@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+# Script copies a GNSS-RPI image to a device (like an SD card)
+#
+# Anthony Arnold
+# anthony.arnold@uqconnect.edu.au
+# 20140916
+#
+
+
+if [ $EUID -ne 0 ]; then
+  echo "Must run as root"
+  exit 1
+fi
+
+if [ ${#} -ne 2 ]; then
+   echo "Usage: gnss-rpi-2dev image device"
+   exit 1
+fi
+
+image="$1"
+device="$2"
+
+if [ ! -f "$image" ]; then
+   echo "Image file $image not found"
+   exit 2
+fi
+
+if [ ! -b "$device" ]; then
+   echo "Block device $device not found"
+   exit 3
+fi
+
+echo "Writing ${image} to ${device}"
+@DD@ if="$image" of="$device" bs=1M || { echo "Failed to copy image"; exit 4 }
+
+# Resize the partition
+echo "Resizeing root parition to use entire disk"
+start="$( fdisk -l "$device" | grep "${device}2" | tr -s ' ' | cut -d ' ' -f2 )"
+
+fdisk -u "$device" << EOF
+d
+2
+
+n
+p
+2
+${start}
+
+w
+EOF
+
+echo "Resizing root file system"
+@RESIZE2FS@ "${device}2"
+
+echo "Done."

@@ -77,6 +77,12 @@ required_program(MKFS_VFAT
   mkfs.vfat
   "Program for making vfat filesystems")
 
+###############################################################################
+# resize2fs
+###############################################################################
+required_program(RESIZE2FS
+  resize2fs
+  "Program for resizing ext4 filesystems")
 
 ###############################################################################
 # Configure the gnss-rpi scripts
@@ -105,6 +111,7 @@ install_file(fstab)
 install_file(hostname)
 install_file(interfaces)
 install_file(debconf.set)
+install_file(gnss-rpi-2dev)
 
 install(PROGRAMS
   ${CMAKE_BINARY_DIR}/run
@@ -127,4 +134,7 @@ install(FILES
   DESTINATION lib/gnss-rpi)
   
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/gnss-rpi DESTINATION sbin)
+install(PROGRAMS 
+  ${CMAKE_BINARY_DIR}/gnss-rpi 
+  ${CMAKE_BINARY_DIR}/gnss-rpi-2dev
+  DESTINATION sbin)
