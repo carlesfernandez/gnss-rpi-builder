@@ -5,7 +5,7 @@
 mirror=$1
 release=$2
 
-dpkg --add-architecure armhf
+dpkg --add-architecture armhf
 
 # Add raspbian to the apt-get keyring
 @WGET@ --no-proxy $mirror/raspbian.public.key -O - | apt-key add \
