@@ -3,7 +3,12 @@
 
 mkdir "/rpi-build"
 
-procs="$( nproc )"
+
+# Where gnss-sdr will live
+gnss_dir="$1"
+
+# How many cores on the host machine
+procs=$2
 
 gnss_sdr_src="/build/gnss-sdr"
 gnss_sdr_repo="git://git.code.sf.net/p/gnss-sdr/cttc"
@@ -24,10 +29,12 @@ compile ()
 mkdir -p "$1/build"
 cd "$1/build"
 if [ ! -f ./Makefile ]; then
-    cmake \
-	-DCMAKE_INSTALL_PREFIX:PATH=/usr/local \
-	-DENABLE_GN3S=ON \
+    # gnss-sdr not always up to date :)
+    gfpath="/usr/lib/gcc/arm-linux-gnueabihf/4.9"
+
+    LIB="$LIB:${gfpath}" cmake \
 	-DENABLE_RTLSDR=ON \
+	-DENABLE_GENERIC_ARCH=ON \ # Raspberry Pi can't take sse
 	../
 fi
 make -j${procs}
@@ -36,8 +43,20 @@ ldconfig
 cd /
 }
 
-compile ${gnss_sdr_src}/drivers/gr-gn3s
+# Make doubly sure packages are available
+apt-get install -y libssl-dev libboost-all-dev libuhd-dev libosmosdr-dev gnuradio gnuradio-dev gr-osmosdr wicd-curses \
+    libusb-dev libusb-1.0-0-dev gfortran libopenblas-dev liblapack-dev libarmadillo-dev
+
+# Compile and install gnss-sdr
+
+# compile ${gnss_sdr_src}/drivers/gr-gn3s
 compile ${gnss_sdr_src}
+
+# Copy gnss-sdr and config to the gnss directory
+mkdir -p "${gnss_dir}"
+mv "${gnss_sdr_src}/install" "${gnss_dir}"
+mv "${gnss_sdr_src}/data" "${gnss_dir}"
+mv "${gnss_sdr_src}/conf" "${gnss_dir}"
 
 rm -rf "/rpi-build"
 rm -f compilation

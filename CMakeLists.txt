@@ -83,32 +83,28 @@ required_program(MKFS_VFAT
 ###############################################################################
 
 
-function (executable_file name)
+function (install_file name)
 configure_file(${name}.in
-  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${name}
+  ${name}
   @ONLY)
-file(COPY ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${name}
-  DESTINATION ${CMAKE_BINARY_DIR}
-  FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ
-  GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
 
 endfunction()
 
-executable_file(gnss-rpi)
-executable_file(run)
-executable_file(apt-update)
-executable_file(bootstrap)
-executable_file(cleanup)
-executable_file(compilation)
-executable_file(final)
-executable_file(make-image)
-executable_file(mount-fs)
-executable_file(packages.list)
-executable_file(cmdline.txt)
-executable_file(fstab)
-executable_file(hostname)
-executable_file(interfaces)
-executable_file(debconf.set)
+install_file(gnss-rpi)
+install_file(run)
+install_file(apt-update)
+install_file(bootstrap)
+install_file(cleanup)
+install_file(compilation)
+install_file(final)
+install_file(make-image)
+install_file(mount-fs)
+install_file(packages.list)
+install_file(cmdline.txt)
+install_file(fstab)
+install_file(hostname)
+install_file(interfaces)
+install_file(debconf.set)
 
 install(PROGRAMS
   ${CMAKE_BINARY_DIR}/run
