@@ -28,15 +28,15 @@ compile ()
 {
 mkdir -p "$1/build"
 cd "$1/build"
-if [ ! -f ./Makefile ]; then
-    # gnss-sdr not always up to date :)
-    gfpath="/usr/lib/gcc/arm-linux-gnueabihf/4.9"
 
-    LIB="$LIB:${gfpath}" cmake \
-	-DENABLE_RTLSDR=ON \
-	-DENABLE_GENERIC_ARCH=ON \ # Raspberry Pi can't take sse
-	../
-fi
+# gnss-sdr not always up to date :)
+gfpath="/usr/lib/gcc/arm-linux-gnueabihf/4.9"
+
+LIB="$LIB:${gfpath}" cmake \
+    -DENABLE_RTLSDR=ON \
+    -DENABLE_GENERIC_ARCH=ON \ # Raspberry Pi can't take sse
+../
+
 make -j${procs}
 make install
 ldconfig
