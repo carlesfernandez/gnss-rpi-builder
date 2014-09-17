@@ -6,10 +6,12 @@
 #
 # Anthony Arnold, http://anthony-arnold.com, anthony.arnold@uqconnect.edu.au
 #
-# usage: gnss-rpi [options...]
+# usage: gnss-rpi [options...] | --help
 #
 # Options:
 #   --release release   : e.g. wheezy, jessie etc. Defaults to stable.
 #   --mirror mirror     : Defaults to http://archive.rasbian.org
+#   --repo repo         ; Defaults to https://github.com/gnss-sdr/gnss-sdr
+#   --branch branch     ; Defaults to master
 
 @CMAKE_INSTALL_PREFIX@/lib/gnss-rpi/run "$@"

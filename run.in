@@ -5,20 +5,11 @@
 # Bootstrap an armhf debian installation for a raspberry pi.
 #
 # Anthony Arnold, http://anthony-arnold.com, anthony.arnold@uqconnect.edu.au
-#
-# usage: gnss-rpi [options...]
-#
-# Options:
-#   --release release   : e.g. wheezy, jessie etc. Defaults to stable.
-#   --mirror mirror     : Defaults to http://archive.rasbian.org
+
 
 pkgsrc="@CMAKE_INSTALL_PREFIX@/lib/gnss-rpi"
 call_dir="$( pwd )"
 
-if [ $EUID -ne 0 ]; then
-  echo "Must run as root"
-  exit 1
-fi
 
 # Parse arguments
 
@@ -28,7 +19,16 @@ gnss_repo="https://github.com/gnss-sdr/gnss-sdr"
 gnss_branch="master"
 while test ${#} -gt 0
 do
-    if [ $1 == "--release" ]; then
+    if [ $1 == "--help" ]; then
+	echo "usage: gnss-rpi [options...] | --help"
+	echo
+	echo "Options:"
+	echo "   --release release   : e.g. wheezy, jessie etc. Defaults to stable."
+	echo "   --mirror mirror     : Defaults to http://archive.rasbian.org"
+	echo "   --repo repo         ; Defaults to https://github.com/gnss-sdr/gnss-sdr"
+	echo "   --branch branch     ; Defaults to master"
+	exit 0
+    elif [ $1 == "--release" ]; then
 	shift
 	release=$1
     elif [ $1 == "--mirror" ]; then
@@ -37,12 +37,20 @@ do
     elif [ $1 == "--repo" ]; then
 	shift
 	gnss_repo="$1"
-    else [ $1 == "--branch" ]; then
+    elif [ $1 == "--branch" ]; then
 	shift
 	gnss_branch="$1"
+    else
+	echo "Unrecognised argument $1"
+	exit 1
     fi
     shift
 done
+
+if [ $EUID -ne 0 ]; then
+  echo "Must run as root"
+  exit 1
+fi
 
 # Add sources to apt
 ${pkgsrc}/apt-update "${mirror}" "${release}"
