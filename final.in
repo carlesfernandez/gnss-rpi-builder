@@ -2,6 +2,8 @@
 # Bootstrapping script run during the final stage of bootstrapping
 
 nproc=$1
+gnss_repo="$2"
+gnss_branch="$3"
 
 debconf-set-selections /debconf.set
 rm -f /debconf.set
@@ -22,7 +24,7 @@ sed -i -e 's/KERNEL\!=\"eth\*|/KERNEL\!=\"/' /lib/udev/rules.d/75-persistent-net
 
 # Set up GNSS-SDR
 gnss_sdr_dir="/var/gnss-sdr"
-./compilation "${gnss_sdr_dir}" ${nproc}
+./compilation "${gnss_sdr_dir}" "${gnss_repo}" "${gnss_branch}" ${nproc}
 
 # Set up a GNSS-SDR user
 useradd gnss -d /home/gnss
@@ -33,12 +35,15 @@ echo "export PATH=$PATH:${gnss_sdr_dir}" >> /home/gnss/.bashrc
 rlt_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
 apt-get install -y supervisor
 echo "[program:gnss]" >> /etc/supervisor/supervisord.conf
-echo "command=gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss" >> /etc/supervisor/supervisord.conf
+echo "command=gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
+" >> /etc/supervisor/supervisord.conf
 echo "startsecs=10" >> /etc/supervisor/supervisord.conf
 echo "user=gnss" >> /etc/supervisor/supervisord.conf
 echo "directory=/home/gnss" >> /etc/supervisor/supervisord.conf
-echo "stderr_logfile=/home/gnss/gnss_error.log" >> /etc/supervisor/supervisord.conf
-echo "stdout_logfile=/home/gnss/gnss_output.log" >> /etc/supervisor/supervisord.conf
+echo "stderr_logfile=/home/gnss/gnss_error.log
+" >> /etc/supervisor/supervisord.conf
+echo "stdout_logfile=/home/gnss/gnss_output.log
+" >> /etc/supervisor/supervisord.conf
 
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 rm -f final

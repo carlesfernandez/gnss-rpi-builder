@@ -24,7 +24,8 @@ fi
 
 release="jessie"
 mirror="http://archive.rasbian.org"
-
+gnss_repo="https://github.com/gnss-sdr/gnss-sdr"
+gnss_branch="master"
 while test ${#} -gt 0
 do
     if [ $1 == "--release" ]; then
@@ -33,6 +34,12 @@ do
     elif [ $1 == "--mirror" ]; then
 	shift
 	mirror=$1
+    elif [ $1 == "--repo" ]; then
+	shift
+	gnss_repo="$1"
+    else [ $1 == "--branch" ]; then
+	shift
+	gnss_branch="$1"
     fi
     shift
 done
@@ -67,7 +74,14 @@ mount $root_dev "${root_dir}"
 
 # Bootstrap
 sleep 3
-${pkgsrc}/bootstrap "${root_dir}" "${boot_dir}" $boot_dev ${release} ${mirror}
+${pkgsrc}/bootstrap \
+    "${root_dir}" \
+    "${boot_dir}" \
+    $boot_dev \
+    ${release} \
+    ${mirror} \
+    "${gnss_repo}" \
+    "${gnss_branch}"
 
 # Unmount
 

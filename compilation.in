@@ -7,13 +7,20 @@ mkdir -p "/rpi-build"
 # Where gnss-sdr will live
 gnss_dir="$1"
 
+# What is the gnss-sdr repository url?
+gnss_sdr_repo="$2"
+
+# What is the gnss-sdr branch?
+gnss_sdr_branch="$3"
+
 # How many cores on the host machine
-procs=$2
+procs=$4
 
 gnss_sdr_src="/build/gnss-sdr"
-gnss_sdr_repo="git://git.code.sf.net/p/gnss-sdr/cttc"
 
 git clone --depth 1 ${gnss_sdr_repo} ${gnss_sdr_src}
+cd "${gnss_sdr_src}"
+git checkout "${gnss_sdr_branch}"
 
 cd "/rpi-build"
 if [ ! -d gtest-1.7.0 ]; then
@@ -26,33 +33,6 @@ make -j${procs}
 cd ..
 export GTEST_DIR="/rpi-build/gtest-1.7.0"
 
-compile ()
-{
-mkdir -p "$1/build"
-cd "$1/build"
-
-replaced="NewCMakeLists.txt"
-sed \
-   's/\-march\=native \-mfpmath\=sse/-march=armv6 -mfloat-abi=hard -mfpu=vfp/' \
-   "../CMakeLists.txt" > "${replaced}"
-
-cp "$1/CMakeLists.txt" "$1/CMakeLists.txt.bak"
-mv "${replaced}" "$1/CMakeLists.txt"
-
-
-# gnss-sdr not always up to date :)
-gfpath="/usr/lib/gcc/arm-linux-gnueabihf/4.9"
-
-LIB="$LIB:${gfpath}" cmake \
-    -DENABLE_RTLSDR=ON \
-    -DENABLE_GENERIC_ARCH=OFF \
-    ../
-
-make -j${procs}
-make install
-ldconfig
-cd /
-}
 
 # Make doubly sure packages are available
 apt-get install -y libssl-dev libboost-all-dev libuhd-dev libosmosdr-dev \
@@ -60,9 +40,16 @@ apt-get install -y libssl-dev libboost-all-dev libuhd-dev libosmosdr-dev \
     gfortran libopenblas-dev liblapack-dev libarmadillo-dev liblog4cpp5-dev
 
 # Compile and install gnss-sdr
+build_dir="${gnss_sdr_src}/build"
+mkdir -p "${build_dir}"
+cd "${build_dir}"
 
-# compile ${gnss_sdr_src}/drivers/gr-gn3s
-compile ${gnss_sdr_src}
+GTEST_DIR="/rpi-build/gtest-1.7.0" cmake -DENABLE_RTLSDR=ON ../
+
+make -j${procs}
+make install
+ldconfig
+cd /
 
 # Copy gnss-sdr and config to the gnss directory
 mkdir -p "${gnss_dir}"
