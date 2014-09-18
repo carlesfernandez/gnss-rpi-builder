@@ -29,7 +29,9 @@ gnss_sdr_dir="/var/gnss-sdr"
 # Set up a GNSS-SDR user
 useradd gnss -d /home/gnss
 echo "gnss:gnss" | chpasswd
-echo "export PATH=$PATH:${gnss_sdr_dir}" >> /home/gnss/.bashrc
+mkdir -p /home/gnss
+touch /home/gnss/.bashrc
+echo "export PATH=\$PATH:${gnss_sdr_dir}" >> /home/gnss/.bashrc
 
 # Install supervisor
 rlt_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
