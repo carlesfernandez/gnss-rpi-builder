@@ -31,8 +31,9 @@ if [ ! -b "$device" ]; then
    exit 3
 fi
 
+set -e
 echo "Writing ${image} to ${device}"
-@DD@ if="$image" of="$device" bs=1M || { echo "Failed to copy image"; exit 4 }
+@DD@ if="$image" of="$device" bs=1M
 
 # Resize the partition
 echo "Resizeing root parition to use entire disk"
