@@ -18,9 +18,8 @@ procs=$4
 
 gnss_sdr_src="/build/gnss-sdr"
 
-git clone --depth 1 ${gnss_sdr_repo} ${gnss_sdr_src}
-cd "${gnss_sdr_src}"
-git checkout "${gnss_sdr_branch}"
+echo "Cloning branch ${gnss_sdr_branch} from ${gnss_sdr_repo}"
+git clone -b "${gnss_sdr_branch}" ${gnss_sdr_repo} ${gnss_sdr_src}
 
 cd "/rpi-build"
 if [ ! -d gtest-1.7.0 ]; then
