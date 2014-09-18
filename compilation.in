@@ -1,9 +1,6 @@
 #!/bin/bash
 # Bootstrap file, run during the final stage of bootstrapping
 
-mkdir -p "/rpi-build"
-
-
 # Where gnss-sdr will live
 gnss_dir="$1"
 
@@ -21,18 +18,6 @@ gnss_sdr_src="/build/gnss-sdr"
 echo "Cloning branch ${gnss_sdr_branch} from ${gnss_sdr_repo}"
 git clone -b "${gnss_sdr_branch}" ${gnss_sdr_repo} ${gnss_sdr_src}
 
-cd "/rpi-build"
-if [ ! -d gtest-1.7.0 ]; then
-    wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
-    unzip gtest-1.7.0.zip
-fi
-cd gtest-1.7.0
-./configure
-make -j${procs}
-cd ..
-export GTEST_DIR="/rpi-build/gtest-1.7.0"
-
-
 # Make doubly sure packages are available
 apt-get install -y libssl-dev libboost-all-dev libuhd-dev libosmosdr-dev \
     gnuradio gnuradio-dev gr-osmosdr wicd-curses libusb-dev libusb-1.0-0-dev \
@@ -43,7 +28,7 @@ build_dir="${gnss_sdr_src}/build"
 mkdir -p "${build_dir}"
 cd "${build_dir}"
 
-GTEST_DIR="/rpi-build/gtest-1.7.0" cmake -DENABLE_RTLSDR=ON ../
+cmake -DENABLE_RTLSDR=ON -DARCH_COMPILER_FLAGS="-march=armv6 -mfloat-abi=hard -mfpu=vfp" ../
 
 make -j${procs}
 make install
