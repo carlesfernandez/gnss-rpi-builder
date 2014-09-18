@@ -41,5 +41,4 @@ mv "${gnss_sdr_src}/install" "${gnss_dir}"
 mv "${gnss_sdr_src}/data" "${gnss_dir}"
 mv "${gnss_sdr_src}/conf" "${gnss_dir}"
 
-rm -rf "/rpi-build"
 rm -f compilation
