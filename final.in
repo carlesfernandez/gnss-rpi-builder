@@ -37,7 +37,7 @@ echo "gnss:gnss" | chpasswd
 rlt_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
 apt-get install -y supervisor
 echo "[program:gnss]" >> /etc/supervisor/supervisord.conf
-echo "command=gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
+echo "command=${gnss_sdr_dir}/gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
 " >> /etc/supervisor/supervisord.conf
 echo "startsecs=10" >> /etc/supervisor/supervisord.conf
 echo "user=gnss" >> /etc/supervisor/supervisord.conf
