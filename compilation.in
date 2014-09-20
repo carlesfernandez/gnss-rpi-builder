@@ -13,17 +13,31 @@ gnss_sdr_branch="$3"
 # How many cores on the host machine
 procs=$4
 
+# Build and install replacement volk
+git init gnuradio
+cd gnuradio
+git config core.sparsecheckout true
+echo "volk" >> .git/info/sparse-checkout
+git remote add -f origin https://github.com/gnuradio/gnuradio
+git pull --depth=1 origin master
+mkdir volk/build
+cd volk/build
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local \
+    -Dhave_mfpu_neon=0 \
+    -DCMAKE_CXX_FLAGS:STRING="-march=armv6 -mfpu=vfp -mfloat-abi=hard" \
+    -DCMAKE_C_FLAGS:STRING="-march=armv6 -mfpu=vfp -mfloat-abi=hard" \
+    ../
+make -j${procs}
+make install
+ldconfig
+cd /
+
+# Compile and install gnss-sdr
 gnss_sdr_src="/build/gnss-sdr"
 
 echo "Cloning branch ${gnss_sdr_branch} from ${gnss_sdr_repo}"
 git clone -b "${gnss_sdr_branch}" ${gnss_sdr_repo} ${gnss_sdr_src}
 
-# Make doubly sure packages are available
-apt-get install -y libssl-dev libboost-all-dev libuhd-dev libosmosdr-dev \
-    gnuradio gnuradio-dev gr-osmosdr wicd-curses libusb-dev libusb-1.0-0-dev \
-    gfortran libopenblas-dev liblapack-dev libarmadillo-dev liblog4cpp5-dev
-
-# Compile and install gnss-sdr
 build_dir="${gnss_sdr_src}/build"
 mkdir -p "${build_dir}"
 cd "${build_dir}"
@@ -41,4 +55,6 @@ mv "${gnss_sdr_src}/install" "${gnss_dir}"
 mv "${gnss_sdr_src}/data" "${gnss_dir}"
 mv "${gnss_sdr_src}/conf" "${gnss_dir}"
 
+rm -rf "${gnss_sdr_src}"
+rm -rf gnuradio
 rm -f compilation

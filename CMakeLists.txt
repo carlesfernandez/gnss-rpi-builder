@@ -109,6 +109,7 @@ install_file(packages.list)
 install_file(cmdline.txt)
 install_file(fstab)
 install_file(hostname)
+install_file(hosts)
 install_file(interfaces)
 install_file(debconf.set)
 install_file(gnss-rpi-2dev)
@@ -129,6 +130,7 @@ install(FILES
   ${CMAKE_BINARY_DIR}/cmdline.txt
   ${CMAKE_BINARY_DIR}/fstab
   ${CMAKE_BINARY_DIR}/hostname
+  ${CMAKE_BINARY_DIR}/hosts
   ${CMAKE_BINARY_DIR}/interfaces
   ${CMAKE_BINARY_DIR}/debconf.set
   DESTINATION lib/gnss-rpi)

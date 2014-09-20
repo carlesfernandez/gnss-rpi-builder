@@ -43,6 +43,7 @@ echo "Setting up preliminary files on ${image}"
 cp "${script_dir}/cmdline.txt" boot/cmdline.txt
 cp "${script_dir}/fstab" etc/fstab
 cp "${script_dir}/hostname" etc/hostname
+cp "${script_dir}/hosts" etc/hosts
 cp "${script_dir}/interfaces" etc/network/interfaces
 cp "${script_dir}/debconf.set" debconf.set
 
