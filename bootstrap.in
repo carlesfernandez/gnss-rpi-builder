@@ -45,6 +45,7 @@ cp "${script_dir}/fstab" etc/fstab
 cp "${script_dir}/hostname" etc/hostname
 cp "${script_dir}/interfaces" etc/network/interfaces
 cp "${script_dir}/debconf.set" debconf.set
+cp "${script_dir}/hosts" etc/hosts
 
 echo "deb $mirror/raspbian ${release} main contrib non-free
 " > etc/apt/sources.list

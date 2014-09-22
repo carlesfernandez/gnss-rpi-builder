@@ -33,11 +33,13 @@ fi
 
 set -e
 echo "Writing ${image} to ${device}"
-@DD@ if="$image" of="$device" bs=1M
+@DD@ if="$image" of="$device" bs=4M
+sync
 
 # Resize the partition
 echo "Resizeing root parition to use entire disk"
 start="$( fdisk -l "$device" | grep "${device}2" | tr -s ' ' | cut -d ' ' -f2 )"
+echo "${device}2 starts at ${start}"
 
 fdisk -u "$device" << EOF
 d
@@ -50,6 +52,7 @@ ${start}
 
 w
 EOF
+sync
 
 echo "Resizing root file system"
 @RESIZE2FS@ "${device}2"
