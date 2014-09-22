@@ -5,12 +5,15 @@ nproc=$1
 gnss_repo="$2"
 gnss_branch="$3"
 
+# Configuration
 debconf-set-selections /debconf.set
 rm -f /debconf.set
 
+# Update packages
 apt-get update
 apt-get -y upgrade
 
+# Raspberry Pi Upgrade
 wget https://raw.githubusercontent.com/Hexxeh/rpi-update/master/rpi-update \
     -O /usr/bin/rpi-update
 chmod +x /usr/bin/rpi-update
@@ -27,6 +30,7 @@ gnss_sdr_dir="/var/gnss-sdr"
 ./compilation "${gnss_sdr_dir}" "${gnss_repo}" "${gnss_branch}" ${nproc}
 
 # Set up a GNSS-SDR user
+mkdir -p /home/gnss
 useradd -m -d /home/gnss -s /bin/bash gnss
 echo "gnss:gnss" | chpasswd
 chown gnss:gnss /home/gnss
@@ -44,6 +48,10 @@ echo "stderr_logfile=/home/gnss/gnss_error.log
 " >> /etc/supervisor/supervisord.conf
 echo "stdout_logfile=/home/gnss/gnss_output.log
 " >> /etc/supervisor/supervisord.conf
+
+# Setup Locale - defaulting to US English
+echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
+locale-gen --purge en_US.UTF-8
 
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 rm -f final
