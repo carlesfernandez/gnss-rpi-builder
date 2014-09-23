@@ -49,10 +49,8 @@ echo "stderr_logfile=/home/gnss/gnss_error.log
 echo "stdout_logfile=/home/gnss/gnss_output.log
 " >> /etc/supervisor/supervisord.conf
 
-# Setup Locale - defaulting to US English
-echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
-locale-gen --purge en_US.UTF-8
-echo 'LC_ALL="en_US.UTF_8"' >> /home/gnss/.profile
+# Setup Locale - TODO: Make non-interactive
+dpkg-reconfigure locales
 
 sed -i -e 's/KERNEL\!=\"eth\*|/KERNEL\!=\"/' /lib/udev/rules.d/75-persistent-net-generator.rules
 rm -f /etc/udev/rules.d/70-persistent-net.rules

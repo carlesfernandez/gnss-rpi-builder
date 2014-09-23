@@ -25,6 +25,7 @@ mkdir volk/build
 cd volk/build
 cmake -DCMAKE_INSTALL_PREFIX=/usr/lib/arm-linux-gnueabihf \
     -Dhave_mfpu_neon=0 \
+    -DHAVE_POSIX_MEMALIGN=0 \
     -DCMAKE_CXX_FLAGS:STRING="-march=armv6 -mfpu=vfp -mfloat-abi=hard" \
     -DCMAKE_C_FLAGS:STRING="-march=armv6 -mfpu=vfp -mfloat-abi=hard" \
     ../
