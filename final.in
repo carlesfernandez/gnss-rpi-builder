@@ -30,16 +30,16 @@ gnss_sdr_dir="/var/gnss-sdr"
 
 # Set up a GNSS-SDR user
 mkdir -p /home/gnss
-useradd gnss -d /home/gnss -s /bin/bash
-chown gnss:gnss /home/gnss
+useradd -m -d /home/gnss -s /bin/bash gnss
 echo "gnss:gnss" | chpasswd
+chown gnss:gnss /home/gnss
 echo "root:pi" | chpasswd
 
 # Install supervisor
-rlt_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
+rtl_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
 apt-get install -y supervisor
 echo "[program:gnss]" >> /etc/supervisor/supervisord.conf
-echo "command=${gnss_sdr_dir}/install/gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
+echo "command=${gnss_sdr_dir}/install/gnss-sdr --config_file=${rtl_config} --log_dir=/home/gnss
 " >> /etc/supervisor/supervisord.conf
 echo "startsecs=10" >> /etc/supervisor/supervisord.conf
 echo "user=gnss" >> /etc/supervisor/supervisord.conf

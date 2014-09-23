@@ -113,6 +113,7 @@ install_file(hosts)
 install_file(interfaces)
 install_file(debconf.set)
 install_file(gnss-rpi-2dev)
+install_file(hosts)
 
 install(PROGRAMS
   ${CMAKE_BINARY_DIR}/run
