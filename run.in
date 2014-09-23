@@ -97,6 +97,6 @@ cd ${call_dir}
 sleep 3
 umount $root_dev
 @KPARTX@ -d "${image}"
-
+rm -rf $root_dev
 
 echo "Raspbian ${release} image created"

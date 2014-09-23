@@ -23,21 +23,23 @@ touch /boot/start.elf
 
 rpi-update
 
-sed -i -e 's/KERNEL\!=\"eth\*|/KERNEL\!=\"/' /lib/udev/rules.d/75-persistent-net-generator.rules
 
 # Set up GNSS-SDR
 gnss_sdr_dir="/var/gnss-sdr"
 ./compilation "${gnss_sdr_dir}" "${gnss_repo}" "${gnss_branch}" ${nproc}
 
 # Set up a GNSS-SDR user
+mkdir -p /home/gnss
 useradd gnss -d /home/gnss -s /bin/bash
+chown gnss:gnss /home/gnss
 echo "gnss:gnss" | chpasswd
+echo "root:pi" | chpasswd
 
 # Install supervisor
 rlt_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"
 apt-get install -y supervisor
 echo "[program:gnss]" >> /etc/supervisor/supervisord.conf
-echo "command=${gnss_sdr_dir}/gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
+echo "command=${gnss_sdr_dir}/install/gnss-sdr --config_file=${rlt_config} --log_dir=/home/gnss
 " >> /etc/supervisor/supervisord.conf
 echo "startsecs=10" >> /etc/supervisor/supervisord.conf
 echo "user=gnss" >> /etc/supervisor/supervisord.conf
@@ -50,6 +52,8 @@ echo "stdout_logfile=/home/gnss/gnss_output.log
 # Setup Locale - defaulting to US English
 echo -e 'LANG="en_US.UTF-8"\nLANGUAGE="en_US:en"\n' > /etc/default/locale
 locale-gen --purge en_US.UTF-8
+echo 'LC_ALL="en_US.UTF_8"' >> /home/gnss/.profile
 
+sed -i -e 's/KERNEL\!=\"eth\*|/KERNEL\!=\"/' /lib/udev/rules.d/75-persistent-net-generator.rules
 rm -f /etc/udev/rules.d/70-persistent-net.rules
 rm -f final
