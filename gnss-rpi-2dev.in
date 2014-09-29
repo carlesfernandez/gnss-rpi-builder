@@ -55,6 +55,7 @@ EOF
 sync
 
 echo "Resizing root file system"
+@E2FSCK@ -f "${device}2"
 @RESIZE2FS@ "${device}2"
 
 echo "Done."
