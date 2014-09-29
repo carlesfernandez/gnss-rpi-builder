@@ -4,6 +4,8 @@
 nproc=$1
 gnss_repo="$2"
 gnss_branch="$3"
+gr_repo="$4"
+gr_branch="$5"
 
 # Configuration
 debconf-set-selections /debconf.set
@@ -26,7 +28,7 @@ rpi-update
 
 # Set up GNSS-SDR
 gnss_sdr_dir="/var/gnss-sdr"
-./compilation "${gnss_sdr_dir}" "${gnss_repo}" "${gnss_branch}" ${nproc}
+./compilation "${gnss_sdr_dir}" "${gnss_repo}" "${gnss_branch}" "${gr_repo}" "${gr_branch}" ${nproc}
 
 # Set up a GNSS-SDR user
 mkdir -p /home/gnss
@@ -34,6 +36,7 @@ useradd -m -d /home/gnss -s /bin/bash gnss
 echo "gnss:gnss" | chpasswd
 chown gnss:gnss /home/gnss
 echo "root:pi" | chpasswd
+adduser gnss netdev
 
 # Install supervisor
 rtl_config="${gnss_sdr_dir}/conf/gnss-sdr_GPS_L1_rtlsdr_realtime.conf"

@@ -11,6 +11,8 @@ release=$4
 mirror=$5
 repo=$6
 branch=$7
+gr_repo=$8
+gr_branch=$9
 
 echo "Bootstrapping Raspbian ${release} into ${root_dir}"
 echo "Boot device is ${boot_dev}"
@@ -62,7 +64,7 @@ cp "${script_dir}/final" final
 chmod +x compilation final
 
 echo "Final bootstrap stage"
-LANG=C @CHROOT@ "${root_dir}" /final "$( nproc )" "${repo}" "${branch}"
+LANG=C @CHROOT@ "${root_dir}" /final "$( nproc )" "${repo}" "${branch}" "${gr_repo}" "${gr_branch}"
 
 echo "Cleaning up"
 cp "${script_dir}/cleanup" cleanup

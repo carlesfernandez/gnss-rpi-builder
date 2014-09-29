@@ -17,6 +17,8 @@ release="jessie"
 mirror="http://archive.rasbian.org"
 gnss_repo="https://github.com/gnss-sdr/gnss-sdr"
 gnss_branch="master"
+gr_repo="https://github.com/gnuradio/gnuradio"
+gr_branch="master"
 while test ${#} -gt 0
 do
     if [ $1 == "--help" ]; then
@@ -27,6 +29,8 @@ do
 	echo "   --mirror mirror     : Defaults to http://archive.rasbian.org"
 	echo "   --repo repo         ; Defaults to https://github.com/gnss-sdr/gnss-sdr"
 	echo "   --branch branch     ; Defaults to master"
+	echo "   --gr-repo repo      ; Defaults to https://github.com/gnuradio/gnuradio"
+	echo "   --gr-branch branch  ; Defaults to master"
 	exit 0
     elif [ $1 == "--release" ]; then
 	shift
@@ -40,6 +44,12 @@ do
     elif [ $1 == "--branch" ]; then
 	shift
 	gnss_branch="$1"
+    elif [ $1 == "--gr-repo" ]; then
+	shift
+	gr_repo="$1"
+    elif [ $1 == "--gr-branch" ]; then
+	shift
+	gr_branch="$1"
     else
 	echo "Unrecognised argument $1"
 	exit 1
@@ -89,7 +99,9 @@ ${pkgsrc}/bootstrap \
     ${release} \
     ${mirror} \
     "${gnss_repo}" \
-    "${gnss_branch}"
+    "${gnss_branch}" \
+    "${gr_repo}" \
+    "${gr_branch}"
 
 # Unmount
 
